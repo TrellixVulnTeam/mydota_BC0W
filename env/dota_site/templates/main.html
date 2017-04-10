@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block detail %}
+<div id="main_cont">
+    <div id="container", class="container-fluid animated fadeIn">
+    <h1  class="animated fadeIn" id="main_title">MYDOTA</h1>
+    <h2 class="animated fadeIn" id="main_second_title">A lightweight Dota2 data site.</h1>
+        <div id="search" class="animated fadeIn">
+            <form class="" role="search">
+                    <div class="form-group">
+                    <input type="text" class="form-control" id="main_search" method="post" name="match_id" placeholder="Search for match id, or player id">
+                    </div>
+                <button type="submit" id="main_submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

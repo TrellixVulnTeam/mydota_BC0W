@@ -1,0 +1,7 @@
+#!c:\users\letso\dropbox\dropsyncfiles\projects\env\scripts\python.exe
+#
+# Stub script to run jsbeautifier
+#
+import sys
+from jsbeautifier import main
+sys.exit(main())
