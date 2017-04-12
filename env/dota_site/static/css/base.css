@@ -1,24 +1,52 @@
+#nav-search{
+  position: relative;
+  left: 35%;
+}
+
+#navbar_main{
+background-color: black;
+}
+
+.navbar-brand>img{
+  height: 20px;
+  width: 20px;
+  display: inline-block;
+}
+
+.navbar-header{
+  vertical-align: text-bottom;
+}
+
+.bs-example-navbar-collapse-2{
+  vertical-align: text-bottom;
+}
+
+#search_box{
+  background-color: rgb(33,33,33);
+  color: rgb(255,255,255);
+  border-radius: 5px;
+}
+
+
 @font-face{
     font-family: LeagueGothic;
     src: local(LeagueGothic-Regular.otf);
 }
 
 #victory {
-    display: inline-block;
     width: 100%;
     color: #67E390;
-    text-align: right;
-    align-self: right;
-    right: 0px;
+    text-align: center;
+    font-size: 20px;
 }
 
 #rad_team{
-    background-color: rgba(0,255,72,0.4196078431372549)
+    background-color: rgba(0,255,72,0.4196078431372549);
 }
 
 .table-striped>tbody>tr>td>table>tbody>tr>td>img{
-    height: 25px;
-    width: 35px;
+    height: 20px;
+    width: 30px;
 }
 
 .table-striped>tbody>tr>td>table>tbody{
@@ -34,7 +62,7 @@
 }
 
 .table-striped>tbody>tr>td>img {
-    height: 60px;
+    height: 50px;
 }
 
 #dire_team{
@@ -161,13 +189,55 @@ ul.top_info{
 }
 
 #ability_icon{
-    height: 30px;
+    height: 28px;
 }
 
 #hero_icon{
-    height: 30px;
+    height: 28px;
 }
 
 #rad_team_builds{
     width: 100%;
+    background-color: rgba(0,255,72,0.4196078431372549);
+}
+
+#rad_team_builds>table{
+  width: 100%;
+}
+
+
+#dire_team_builds{
+  background-color: rgba(231, 49, 56, 0.5411764705882353);
+}
+
+#builds{
+  background-color: rgba(7,7,7,0.13725490196078433);
+  padding: 10px; 
+}
+
+.details_panel{
+  padding-top: 60px;
+}
+
+
+.panel-heading p{
+  display: inline;
+}
+
+.panel-heading p:nth-child(1){
+  color: rgba(0,255,72,0.4196078431372549);
+  font-size: 20px;
+}
+
+.panel-heading p:nth-child(2){
+  font-size: 20px;
+}
+
+.panel-heading p:nth-child(3){
+  color: rgba(231, 49, 56, 0.5411764705882353);
+  font-size: 20px;
+}
+
+#score{
+  text-align: center;
 }

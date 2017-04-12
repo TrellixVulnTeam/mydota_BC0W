@@ -1,59 +1,17 @@
-{% extends "base.html" %}
+{% extends "navbar.html" %}
 {% load staticfiles %}
 {% load myslugify %}
 {% block  detail %}
 
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="{% url 'main:home' %}">MainSite</a>
-    </div>
-
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
-      </ul>
-      <form class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" name = "q" method="post" placeholder="Search Match ID">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Link</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-
-<div class="container">
-    <div class="col-sm-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">Match Details: {{match.match_id}} <span id="victory">{{victory}}</span>
-
+<div class="col-sm-2 pull-right details_panel" >
+  <div class="panel panel-default">
+          <div class="panel-heading">Match Details: {{match.match_id}}
           </div>
           <div class="panel-body">
           <ul class="top_info">
+            <li>
+              {{match.duration}}
+            </li>
             <li>
                 {{match.start_time|fromunix}}
             </li>
@@ -63,10 +21,23 @@
             <li>
                 {{match.cluster_name}}
             </li>
-            <li>
-                {{match.tower_status_radiant}}
-            </li>
             </ul>
+          </div>
+        </div>
+</div>
+
+
+<div class="container">
+
+    <div class="col-sm-12 align-content-center">
+        <div class="panel panel-default">
+          <div class="panel-heading" >
+          <h1 id="victory">{{victory}}</h1>
+          <div id="score">
+          <p>{{match.radiant_score}}</p>
+          <p>/</p>
+          <p>{{match.dire_score}}</p>
+          </div>
           </div>
         </div>
         <div id="rad_team">
@@ -74,32 +45,27 @@
                 <thead>
                     <tr>
                       <th>Hero</th>
-                      <th>Kills</th>
-                      <th>Deaths</th>
-                      <th>Assists</th>
+                      <th>Name</th>
+                      <th></th>
+                      <th>K/D/A</th>
                       <th>XPM/GPM</th>
-                      <th>Gold</th>
-                      <th>CS</th>
-                      <th>Denies</th>
-                      <th>Gold Spent</th>
+                      <th>CS/Denies</th>
                       <th>Hero Damage</th>
                       <th>Tower Damage</th>
                       <th>Hero Healing</th>
                       <th>Hero Level</th>
+                      <th>Items</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for player in rad_heroes %}
                     <tr>
                       <td><img src='{{player.hero_img_url}}'></td>
-                      <td>{{player.kills}}</td>
-                      <td>{{player.deaths}}</td>
-                      <td>{{player.assists}}</td>
+                      <td><a href="{% url 'main:player_summary' player.account_id %}">{{ player.name }}<br>{{ player.account_id }}</a></td>
+                      <td><img src="{{ player.prof_pic }}"></td>
+                      <td>{{player.kills}}/{{player.deaths}}/{{player.assists}}</td>
                       <td>{{player.xp_per_min}}/{{player.gold_per_min}}</td>
-                      <td>{{player.gold}}</td>
-                      <td>{{player.last_hits}}</td>
-                      <td>{{player.denies}}</td>
-                      <td>{{player.gold_spent}}</td>
+                      <td>{{player.last_hits}}/{{player.denies}}</td>
                       <td>{{player.hero_damage}}</td>
                       <td>{{player.tower_damage}}</td>
                       <td>{{player.hero_healing}}</td>
@@ -135,14 +101,11 @@
                 <thead>
                 <tr>
                   <th>Hero</th>
-                  <th>Kills</th>
-                  <th>Deaths</th>
-                  <th>Assists</th>
+                  <th>Name</th>
+                  <th></th>
+                  <th>K/D/A</th>
                   <th>XPM/GPM</th>
-                  <th>Gold</th>
-                  <th>CS</th>
-                  <th>Denies</th>
-                  <th>Gold Spent</th>
+                  <th>CS/Denies</th>
                   <th>Hero Damage</th>
                   <th>Tower Damage</th>
                   <th>Hero Healing</th>
@@ -153,15 +116,12 @@
                 <tbody>
                 {% for player in dire_heroes %}
                 <tr>
-                  <td><img id="hero_icon" src='{{player.hero_img_url}}'></td>
-                  <td>{{player.kills}}</td>
-                  <td>{{player.deaths}}</td>
-                  <td>{{player.assists}}</td>
+                  <td><img src='{{player.hero_img_url}}'></td>
+                  <td><a href="{% url 'main:player_summary' player.account_id %}">{{ player.name }}<br>{{ player.account_id }}</a></td>
+                  <td><img src="{{ player.prof_pic }}"></td>
+                  <td>{{player.kills}}/{{player.deaths}}/{{player.assists}}</td>
                   <td>{{player.xp_per_min}}/{{player.gold_per_min}}</td>
-                  <td>{{player.gold}}</td>
-                  <td>{{player.last_hits}}</td>
-                  <td>{{player.denies}}</td>
-                  <td>{{player.gold_spent}}</td>
+                  <td>{{player.last_hits}}/{{player.denies}}</td>
                   <td>{{player.hero_damage}}</td>
                   <td>{{player.tower_damage}}</td>
                   <td>{{player.hero_healing}}</td>
@@ -194,6 +154,10 @@
                 </tbody>
             </table>
         </div>
+
+        <div id="builds">
+        <h3>Ability Builds</h3>
+        <h4>Radiant</h4>
         <div id="rad_team_builds">
             <table class=" table table-striped table-hover ">
               <thead>
@@ -220,6 +184,7 @@
               </tbody>
             </table> 
         </div>
+        <h4>Dire</h4>
         <div id="dire_team_builds">
             <table class=" table table-striped table-hover ">
               <thead>
@@ -244,8 +209,10 @@
                 </tr>
                 {% endfor %}
               </tbody>
-            </table>             
+            </table> 
         </div>
+        </div>
+
     </div>
 </div>
 
@@ -254,8 +221,8 @@
 
 
 {% autoescape off %}
+    {{player_history_}}
     {{match_}}
-    {{items_}}
 {% endautoescape %}
 
 {% endblock %}
