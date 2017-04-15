@@ -37,11 +37,12 @@ def player_summary_view(request, account_id):
 
     player_history = api.get_match_history(account_id=account_id, matches_requested=2)
     player_history = player_history["matches"]
-    player_history_ = json2html.convert(json=player_history)
     heroes = api.get_heroes()
-    heroes_ = json2html.convert(json=heroes)
     heroes = heroes["heroes"]
     player_sum = api.get_player_summaries(steamids=76561198086198097)
+    kills_list = []
+    deaths_list = []
+    assists_list = []
 
     for current_match in player_history:
         match = api.get_match_details(match_id=current_match["match_id"])
@@ -60,9 +61,16 @@ def player_summary_view(request, account_id):
                             return hero["url_large_portrait"]
                 x+=1
         current_match["player_pic"] = player_pic()
+
         current_match["player_kills"] = match["players"][x]["kills"]
+        kills_list.append(current_match["player_kills"])
+
         current_match["player_deaths"] = match["players"][x]["deaths"]
+        deaths_list.append(int(current_match["player_deaths"]))
+
         current_match["player_assists"] = match["players"][x]["assists"]
+        assists_list.append(int(current_match["player_assists"]))
+
         current_match["game_mode_name"] = match["game_mode_name"]
 
         # Handling Result win/loss
@@ -86,12 +94,12 @@ def player_summary_view(request, account_id):
         # else:
         #     current_match["victory"] = "Lost match"
 
-
-
     context={
         "player_history" : player_history,
-        "player_history_" : player_history_,
         "player_sum": player_sum,
+        "kills_list" : kills_list,
+        "deaths_list" : deaths_list,
+        "assists_list" : assists_list,
     }
 
     return render(request, "player_summary.html", context)
@@ -145,7 +153,7 @@ def match_detail_view(request, match_id=None):
     builds_col_num = range(1, 26)
     match["duration"] = timedelta(seconds=match["duration"])
 
-
+    # Retrieving avatars
     for player in players:
         player["stead_id"] = player["account_id"] + 76561197960265728
         player_sum = api.get_player_summaries(steamids=player["stead_id"])

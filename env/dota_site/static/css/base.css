@@ -241,3 +241,8 @@ ul.top_info{
 #score{
   text-align: center;
 }
+
+
+.nav.nav-tabs{
+  overflow: hidden;
+}
