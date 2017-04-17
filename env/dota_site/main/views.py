@@ -7,11 +7,16 @@ import jsbeautifier
 from json2html import *
 import os
 from datetime import timedelta
+from jchart import Chart
+from jchart.config import Title, Axes
 
 api = dota2api.Initialise()
+matches_requested = 10
+
 
 def dec_to_bin(x):
     return int(bin(x)[2:])
+
 
 def load_json_file(file_name):
     inp_file = os.path.abspath(os.path.join(os.path.dirname
@@ -19,23 +24,65 @@ def load_json_file(file_name):
     return inp_file
 
 
+
 def main_view(request):
 
     query = request.GET.get("match_id")
 
     if query:
-        return redirect('main:match_detail', match_id = query)
+        return redirect('main:search_view', search_id = query)
     else:
         return render(request, 'main.html')
 
 
+
+def search_view(request, search_id):
+
+    try:
+        match = api.get_match_details(match_id=search_id)
+        
+        heroes = api.get_heroes()
+        heroes_ = json2html.convert(json=heroes)
+        heroes = heroes["heroes"]
+        players = match['players']
+        for player in players:
+            for hero in heroes:
+                if player["hero_id"] == hero["id"]:
+                    player["hero_img_url"] = hero["url_large_portrait"]
+
+        if match["radiant_win"] == True:
+            match['victory'] = "Radiant Victory"
+        else:
+            match['victory'] = "Dire Victory"
+
+        context={
+            "match" : match,
+            "players" : players,
+        }
+        return render(request, "search_view.html", context)
+    except:
+
+        player = api.get_match_history(
+            account_id=search_id,
+            matches_requested=matches_requested)
+
+        context={
+            "player" : player,
+        }
+        return render(request, "search_view.html", context)
+
+
+
+
 def player_summary_view(request, account_id):
+    
+
 
     query = request.GET.get("q")
     if query:
         return redirect('main:match_detail', match_id = query)
 
-    player_history = api.get_match_history(account_id=account_id, matches_requested=2)
+    player_history = api.get_match_history(account_id=account_id, matches_requested=matches_requested)
     player_history = player_history["matches"]
     heroes = api.get_heroes()
     heroes = heroes["heroes"]
@@ -43,6 +90,9 @@ def player_summary_view(request, account_id):
     kills_list = []
     deaths_list = []
     assists_list = []
+    GPM_list = []
+    XPM_list = []
+
 
     for current_match in player_history:
         match = api.get_match_details(match_id=current_match["match_id"])
@@ -63,13 +113,16 @@ def player_summary_view(request, account_id):
         current_match["player_pic"] = player_pic()
 
         current_match["player_kills"] = match["players"][x]["kills"]
-        kills_list.append(current_match["player_kills"])
+        kills_list.append(int(current_match["player_kills"]))
 
         current_match["player_deaths"] = match["players"][x]["deaths"]
         deaths_list.append(int(current_match["player_deaths"]))
 
         current_match["player_assists"] = match["players"][x]["assists"]
         assists_list.append(int(current_match["player_assists"]))
+
+        GPM_list.append(match["players"][x]["gold_per_min"])
+        XPM_list.append(match["players"][x]["xp_per_min"])
 
         current_match["game_mode_name"] = match["game_mode_name"]
 
@@ -94,30 +147,101 @@ def player_summary_view(request, account_id):
         # else:
         #     current_match["victory"] = "Lost match"
 
+    class KDA(Chart):
+        chart_type = 'line'
+        title = Title(text='KDA over the past 25 games')
+        scales = {
+            'xAxes': [
+            Axes(position='bottom', scaleLabel= 
+                {
+                'display':'true', 'labelString':"Latest-->Most recent"
+                }
+                )
+            ],
+        }
+
+
+        def get_datasets(self, **kwargs):
+            return [{
+                'label' : "Kills",
+                'data' : kills_list,
+                'backgroundColor' : [
+                'rgba(75, 192, 192, 0.2)',
+            ],
+                'borderColor': [
+                'rgba(75, 192, 192, 1)',
+            ],
+            'borderWidth' : 1,
+            },{
+                'label' : "Deaths",
+                'data' : deaths_list,
+                'backgroundColor' : [
+                'rgba(255, 99, 132, 0.2)'],
+                'borderColor': [
+                'rgba(255, 99, 132, 1)'],
+                'borderWidth' : 1,
+            },{
+                'label' : "Assists",
+                'data' : assists_list,
+                'backgroundColor' : [
+                'rgba(255, 206, 86, 0.2)'],
+                'borderColor': [
+                'rgba(255, 206, 86, 1)'],
+                'borderWidth' : 1,
+            }]
+
+        def get_labels(self, **kwargs):
+            return list(range(1, matches_requested+1))
+
+
+    class GPM_XPM(Chart):
+        chart_type = 'line'
+        scales = {
+            'xAxes': [
+            Axes(position='bottom', scaleLabel= 
+                {
+                'display':'true', 'labelString':"Latest-->Most recent"
+                }
+                )
+            ],
+        }
+
+
+        def get_datasets(self, **kwargs):
+            return [{
+                'label' : "GPM",
+                'data' : GPM_list,
+                'backgroundColor' : [
+                'rgba(75, 192, 192, 0.2)',
+            ],
+                'borderColor': [
+                'rgba(75, 192, 192, 1)',
+            ],
+            'borderWidth' : 1,
+            },{
+                'label' : "XPM",
+                'data' : XPM_list,
+                'backgroundColor' : [
+                'rgba(255, 99, 132, 0.2)'],
+                'borderColor': [
+                'rgba(255, 99, 132, 1)'],
+                'borderWidth' : 1,
+            }]
+
+        def get_labels(self, **kwargs):
+            return list(range(1, matches_requested+1))
+
     context={
         "player_history" : player_history,
         "player_sum": player_sum,
-        "kills_list" : kills_list,
-        "deaths_list" : deaths_list,
-        "assists_list" : assists_list,
+        "KDA" : KDA(),
+        "GPM_XPM" : GPM_XPM(),
     }
 
     return render(request, "player_summary.html", context)
 
-def search_view(request, search_id):
 
 
-    if api.get_match_details(match_id=search_id):
-        print('helo')
-    else:
-        api.get_match_history(account_id=search_id, matches_requested=1)
-        print('íyello')
-    return HttpResponse("hu")
-    # match_id = query
-    # player_history = api.get_match_history(account_id=account_id, matches_requested=2)
-    # player_history = player_history["matches"]
-    # match = api.get_match_details(match_id=match_id)
-    # match_ = json2html.convert(json=match)
 
 
 
@@ -157,9 +281,15 @@ def match_detail_view(request, match_id=None):
     for player in players:
         player["stead_id"] = player["account_id"] + 76561197960265728
         player_sum = api.get_player_summaries(steamids=player["stead_id"])
-        player["name"] = player_sum["players"][0]["personaname"]
-        player["prof_pic"] = player_sum["players"][0]["avatarmedium"]
-
+        try:
+            player["name"] = player_sum["players"][0]['personaname']
+            player["prof_pic"] = player_sum["players"][0]["avatarmedium"]
+        except:
+            player["name"] = "Anonymous"
+            player["prof_pic"] = ""
+            player["account_id"] = ""
+        
+    
 
     # Handling item and hero image URLs
 

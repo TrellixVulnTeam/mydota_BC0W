@@ -61,8 +61,16 @@
                 {% for player in rad_heroes %}
                     <tr>
                       <td><img src='{{player.hero_img_url}}'></td>
+                      {% if player.account_id == "" %}
+                      <td>{{ player.name }}</td>
+                      {% else %}
                       <td><a href="{% url 'main:player_summary' player.account_id %}">{{ player.name }}<br>{{ player.account_id }}</a></td>
+                      {% endif %}
+                      {% if player.prof_pic == '' %}
+                      <td><img src="{% static '/spellicons/empty.png'%}"></td>
+                      {% else %}
                       <td><img src="{{ player.prof_pic }}"></td>
+                      {% endif %}
                       <td>{{player.kills}}/{{player.deaths}}/{{player.assists}}</td>
                       <td>{{player.xp_per_min}}/{{player.gold_per_min}}</td>
                       <td>{{player.last_hits}}/{{player.denies}}</td>
@@ -117,8 +125,16 @@
                 {% for player in dire_heroes %}
                 <tr>
                   <td><img src='{{player.hero_img_url}}'></td>
+                  {% if player.account_id == "" %}
+                  <td>{{ player.name }}</td>
+                  {% else %}
                   <td><a href="{% url 'main:player_summary' player.account_id %}">{{ player.name }}<br>{{ player.account_id }}</a></td>
+                  {% endif %}
+                  {% if player.prof_pic == '' %}
+                  <td><img src="{% static '/spellicons/empty.png'%}"></td>
+                  {% else %}
                   <td><img src="{{ player.prof_pic }}"></td>
+                  {% endif %}
                   <td>{{player.kills}}/{{player.deaths}}/{{player.assists}}</td>
                   <td>{{player.xp_per_min}}/{{player.gold_per_min}}</td>
                   <td>{{player.last_hits}}/{{player.denies}}</td>
@@ -221,8 +237,6 @@
 
 
 {% autoescape off %}
-    {{player_history_}}
-    {{match_}}
 {% endautoescape %}
 
 {% endblock %}

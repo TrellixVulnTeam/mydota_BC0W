@@ -246,3 +246,16 @@ ul.top_info{
 .nav.nav-tabs{
   overflow: hidden;
 }
+
+
+
+#Graphs{
+  height: 400px;
+  background-color: rgb(229,213,198);
+  padding: 5px 15px;
+}
+
+#search_table>tbody>tr>td>img{
+  height: 30px;
+}
+

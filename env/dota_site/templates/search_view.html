@@ -1,0 +1,48 @@
+{% extends 'navbar.html' %}
+
+{% block  detail %}
+
+<div class="container">
+<div class="col-sm-12 align-content-center">
+<div class="panel panel-default">
+  <div class="panel-heading">Serach results</div>
+  <div class="panel-body">
+    Matches:
+    {% if match %}
+    <table class="table table-striped table-hover text-center" id="search_table">
+        <thead>
+        </thead>
+        <
+        <tbody>
+        <tr>
+        
+            <td><a href="{% url 'main:match_detail' match.match_id %}"><span>Match id:{{match.match_id}}</span></a></td>
+            <td>Heroes: {% for player in players %}<img src="{{player.hero_img_url}}">{% endfor %}</td>
+            <td>{{ match.game_mode_name }}</td>
+            <td>{{ match.duration}}</td>
+            <td>{{ match.victory }}</td>
+        
+        </tr>
+        </tbody>
+    </table>
+    {% else %}
+    No matches found
+    {% endif %}
+  </div>
+  <div class="panel-body">
+    Players:
+    {% if player %}
+    !!!
+    {% else %}
+    No player found
+    {% endif %}
+  </div>
+</div>
+</div>
+</div>
+
+
+
+
+
+{% endblock %}
